@@ -6,7 +6,7 @@
 import pandas as pd
 
 # Load the CSV file
-file_path = '/mnt/data/BeeCountyOccurrence_short.csv'
+file_path = 'BeeCountyOccurrence_short.csv'
 df = pd.read_csv(file_path)
 
 # Get the list of counties from the header (excluding the 'Scientific Name' column)
@@ -17,7 +17,9 @@ new_data = []
 
 for i, county in enumerate(counties):
     new_row = [''] * (len(counties) + 1)
-    new_row[0] = f"{county}_test"
+    new_row[0] = 'ADD8E6'  # Color1 placeholder
+    new_row[1] = 'FEFEDA'  # Color2 placeholder
+    new_row[2] = f"{county}_test"
     new_row[i + 1] = 'x'
     new_data.append(new_row)
 
@@ -25,7 +27,7 @@ for i, county in enumerate(counties):
 new_df = pd.DataFrame(new_data, columns=df.columns)
 
 # Save the new DataFrame to a CSV file
-new_file_path = '/mnt/data/NewBeeCountyOccurrence_test.csv'
+new_file_path = 'NewBeeCountyOccurrence_test.csv'
 new_df.to_csv(new_file_path, index=False)
 
 new_file_path
