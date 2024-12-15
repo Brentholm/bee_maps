@@ -30,10 +30,10 @@ counties_data = gpd.read_file(gpkg_path)
 #counties_data['color'] = ''
 
 #read the BeeOccurence csv into Pandas dataframe
-#bees = pd.read_csv("MapsData2ColorTest.csv")
+bees = pd.read_csv("MapsData2ColorTest.csv")
 #bees = pd.read_csv("BeeCountyOccurrence.csv")
 #this is a special test file that has names with exactly 1 county each checked
-bees = pd.read_csv("NewBeeCountyOccurrence_test.csv")
+#bees = pd.read_csv("NewBeeCountyOccurrence_test.csv")
 print("first 5 rows of bees",bees.head(5))
 
 #manually set the 3 of columns of data before the county data begins
