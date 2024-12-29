@@ -5,6 +5,10 @@ import plotly.express as px  # Import plotly.express for color scales
 import pandas as pd
 import os
 from datetime import date
+import time
+
+# Start timing
+start_time = time.time()
 
 # Set the prefix for directory names to be created  
 dir_name_prefix = "bee_maps_MN_"
@@ -119,7 +123,31 @@ def populate_occurrences(beesRow, counties_data):
       color = bee_absent_color
     counties_data.loc[counties_data['COUNTY_NAM'] == county, 'color'] = color
   return counties_data
-  
+
+
+
+# # New way: two colors per bee, color defined by C1 or C2
+# def populate_occurrences(beesRow, counties_data):
+#     scientific_name = beesRow['Scientific Name']
+    
+#     # Create a dictionary to map county names to their bee presence status
+#     bee_presence_dict = {county: beesRow.loc[county] if not pd.isna(beesRow.loc[county]) else 'N' for county in counties_data['COUNTY_NAM']}
+    
+#     # Create a dictionary to map county names to their colors
+#     color_dict = {}
+#     for county, bee_present in bee_presence_dict.items():
+#         if bee_present == 'C1':
+#             color_dict[county] = '#' + beesRow['Color1']
+#         elif bee_present == 'C2':
+#             color_dict[county] = '#' + beesRow['Color2']
+#         else:
+#             color_dict[county] = bee_absent_color
+    
+#     # Update the 'color' column in counties_data using the color_dict
+#     counties_data['color'] = counties_data['COUNTY_NAM'].map(color_dict)
+    
+#     return counties_data
+
 def plot_geodata(counties_data, plot_title): # New plotting function
   counties_data.plot(facecolor=counties_data['color'], edgecolor=border_color)
   #Heather no longer wants the title on the plot...
@@ -142,7 +170,12 @@ for index, row in bees.iterrows():
   updated_counties_data = populate_occurrences(row, counties_data)
   plot_geodata(updated_counties_data, row['Scientific Name'])
 
+# End timing
+end_time = time.time()
 
+# Calculate and print the total execution time
+total_time = end_time - start_time
+print(f"Total execution time: {total_time:.2f} seconds")
 
 
 
