@@ -70,17 +70,16 @@ def populate_occurrences(beesRow, counties_data):
             color_dict[county] = '#' + beesRow['Color2']
         else:
             color_dict[county] = bee_absent_color
-    
     # Debug print to verify color_dict
-    print("Color Dictionary:", color_dict)
-    
+    #print("Color Dictionary:", color_dict)   
     # Update the 'color' column in counties_data using the color_dict
     counties_data['color'] = counties_data['COUNTY_NAM'].map(color_dict)
     
     # Debug print to verify updated counties_data
-    print("Updated counties_data with colors:", counties_data[['COUNTY_NAM', 'color']].head())
+    #print("Updated counties_data with colors:", counties_data[['COUNTY_NAM', 'color']].head())
     
-    return counties_data
+    return counties_data 
+    
 
 
 
@@ -94,6 +93,9 @@ def plot_geodata(counties_data, plot_title, legend_handles):  # New plotting fun
     
     # Add the legend to the plot
     ax.legend(handles=legend_handles, loc='center right', frameon=False)
+    
+    # Add title "Minnesota" in the upper right corner with large font
+    plt.text(0.80, 0.90, 'Minnesota', fontsize=24, ha='right', va='top', transform=ax.transAxes)
     
     # Use title in filename, but capitalize every word - "Title Case" style
     plot_title = plot_title.title()
@@ -113,8 +115,8 @@ for index, row in bees.iterrows():
     
     # Create custom legend handles using the current row of the bees DataFrame
     legend_handles = [
-        mpatches.Patch(color='#' + row['Color1'], label='Portman Et Al 2023'),
-        mpatches.Patch(color='#' + row['Color2'], label='Additional records'),
+        mpatches.Patch(color='#' + row['Color1'], label='Portman et\nal 2023'),
+        mpatches.Patch(color='#' + row['Color2'], label='New record\nsince 2023'),
         mpatches.Patch(color=bee_absent_color, label='Absent')
     ]
     
