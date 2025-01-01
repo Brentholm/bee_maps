@@ -38,6 +38,32 @@ output_string += "    (total columns less " + str(cols_before_county_data) + " f
 output_string += "Number of rows in Bees data: " + str(len(bees)) + "\r\n"
 
 # Check that every county in the bees DataFrame can be found in the database of counties
+#check that every county in the bees dataframe can be found in the database of counties
+#iterate through columns of bees
+dataCheckOk = True
+for county_column in bees.columns[cols_before_county_data:]:
+  #check to see that every column name can be found as a COUNTY_NAM in the geo datafram
+  if county_column not in counties_data['COUNTY_NAM'].values:
+    output_string +="County name from bees database '" + str(county_column) + "' not found in counties_data. \r\n"
+    dataCheckOk = False
+if dataCheckOk:
+  output_string +="All the counties in bees data are present in geographical data. \r\n"
+
+# do the reciprocal check, make sure every county in the geographical data is in the bees data
+#iterate through counties in geodataframe
+for county_name in counties_data['COUNTY_NAM']:
+  if county_name not in bees.columns:
+    output_string +="Bees database place name '" + str(county_name) + "' not found in bees data. \r\n"
+    dataCheckOk = False
+if dataCheckOk:
+  output_string +="All the counties in geographical data are present in bees data. \r\n"
+
+#uncomment to stop here without processing the data
+#dataCheckOk = False
+
+print(output_string)
+
+
 # Iterate through columns of bees
 
 bee_absent_color = 'white'
@@ -52,7 +78,7 @@ bees['Scientific Name'] = bees['Scientific Name'].astype(str).fillna('N')
 bees.iloc[:, cols_before_county_data:] = bees.iloc[:, cols_before_county_data:].replace('x', 'C1')
 bees.iloc[:, cols_before_county_data:] = bees.iloc[:, cols_before_county_data:].replace('n', 'C2')
 
-print("first 5 rows of bees",bees.head(5))
+#print("first 5 rows of bees",bees.head(5))
 
 # New way: two colors per bee, color defined by C1 or C2
 def populate_occurrences(beesRow, counties_data):
@@ -79,10 +105,7 @@ def populate_occurrences(beesRow, counties_data):
     #print("Updated counties_data with colors:", counties_data[['COUNTY_NAM', 'color']].head())
     
     return counties_data 
-    
-
-
-
+   
 def plot_geodata(counties_data, plot_title, legend_handles):  # New plotting function
     fig, ax = plt.subplots(figsize=(10, 10))  # Adjust the size as needed
     counties_data.plot(ax=ax, facecolor=counties_data['color'], edgecolor=border_color)
@@ -128,3 +151,10 @@ end_time = time.time()
 # Calculate and print the total execution time
 total_time = end_time - start_time
 print(f"Total execution time: {total_time:.2f} seconds")
+output_string += f" Total execution time: {total_time:.2f} seconds \r\n"
+#output_string +="Bees database place name '" + str(county_name) + "' not found in bees data. \r\n"
+    
+# Save the data inegrity checks string to a text file
+file_path = os.path.join(dir_name, "output_stats.txt")
+with open(file_path, "w") as f:
+    f.write(output_string)
