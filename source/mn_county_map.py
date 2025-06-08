@@ -6,6 +6,8 @@ import pandas as pd
 import os
 from datetime import date
 import matplotlib.patches as mpatches
+import gc
+import psutil
 
 # Start timing
 start_time = time.time()
@@ -24,7 +26,8 @@ gpkg_path = "bdry_counties.gpkg"
 counties_data = gpd.read_file(gpkg_path)
 
 # Read the BeeOccurrence CSV into Pandas DataFrame
-bees = pd.read_csv("MapsData.csv")
+#bees = pd.read_csv("MapsData.csv")
+bees = pd.read_csv("ApidaeYellow2.csv")
 print("first 5 rows of bees", bees.head(5))
 
 # Manually set the number of columns of data before the county data begins
@@ -106,19 +109,20 @@ def populate_occurrences(beesRow, counties_data):
     
     return counties_data 
    
-def plot_geodata(counties_data, plot_title, legend_handles):  # New plotting function
+def plot_geodata(counties_data, plot_title, legend_handles=None):  # New plotting function
     fig, ax = plt.subplots(figsize=(10, 10))  # Adjust the size as needed
-    counties_data.plot(ax=ax, facecolor=counties_data['color'], edgecolor=border_color)
+    counties_data.plot(ax=ax, facecolor=counties_data['color'], edgecolor=border_color, linewidth=2)
     
     # Limit the amount of whitespace
     plt.tight_layout()
     plt.axis("off")
     
     # Add the legend to the plot
-    ax.legend(handles=legend_handles, loc='center right', frameon=False)
+    if legend_handles is not None:
+        ax.legend(handles=legend_handles, loc='center right', frameon=False)
     
     # Add title "Minnesota" in the upper right corner with large font
-    plt.text(0.80, 0.90, 'Minnesota', fontsize=24, ha='right', va='top', transform=ax.transAxes)
+    #plt.text(0.80, 0.90, 'Minnesota', fontsize=24, ha='right', va='top', transform=ax.transAxes)
     
     # Use title in filename, but capitalize every word - "Title Case" style
     plot_title = plot_title.title()
@@ -129,21 +133,30 @@ def plot_geodata(counties_data, plot_title, legend_handles):  # New plotting fun
     
     # Save the figure with reduced whitespace and tighter bounding box
     plt.savefig(os.path.join(dir_name, f"{plot_title}.png"), dpi=600, bbox_inches='tight', pad_inches=0.01)
+    plt.close(fig)  # Close the figure to free up memory
     # plt.savefig("second_sample.png", dpi=300)
     # plt.show()
 
 
+import gc
+
 for index, row in bees.iterrows():
-    counties_data = populate_occurrences(row, counties_data)
-    
+    counties_data_copy = counties_data.copy()
+    counties_data_copy = populate_occurrences(row, counties_data_copy)
+    #uncomment this block to set the legend
     # Create custom legend handles using the current row of the bees DataFrame
-    legend_handles = [
-        mpatches.Patch(color='#' + row['Color1'], label='Portman et\nal 2023'),
-        mpatches.Patch(color='#' + row['Color2'], label='New record\nsince 2023'),
-        mpatches.Patch(color=bee_absent_color, label='Absent')
-    ]
-    
-    plot_geodata(counties_data, row['Scientific Name'], legend_handles)
+    #legend_handles = [
+    #    mpatches.Patch(color='#' + row['Color1'], label='Portman et\nal 2023'),
+    #    mpatches.Patch(color='#' + row['Color2'], label='New record\nsince 2023'),
+    #    mpatches.Patch(color=bee_absent_color, label='Absent')
+    #]
+    #plot_geodata(counties_data_copy, row['Scientific Name'], legend_handles)
+    #plot call without the legend:
+    plot_geodata(counties_data_copy, row['Scientific Name'])
+    #del counties_data_copy, legend_handles
+    del counties_data_copy
+    print(f"Memory usage: {psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2:.2f} MB")
+    gc.collect()
 
 # End timing
 end_time = time.time()
@@ -154,7 +167,7 @@ print(f"Total execution time: {total_time:.2f} seconds")
 output_string += f" Total execution time: {total_time:.2f} seconds \r\n"
 #output_string +="Bees database place name '" + str(county_name) + "' not found in bees data. \r\n"
     
-# Save the data inegrity checks string to a text file
+# Save the data integrity checks string to a text file
 file_path = os.path.join(dir_name, "output_stats.txt")
 with open(file_path, "w") as f:
     f.write(output_string)
