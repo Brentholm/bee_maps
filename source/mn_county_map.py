@@ -32,7 +32,10 @@ counties_data = gpd.read_file(gpkg_path)
 
 # Read the BeeOccurrence CSV into Pandas DataFrame
 #bees = pd.read_csv("MapsData.csv")
-bees = pd.read_csv("ApidaeYellow_first10.csv")
+#bees = pd.read_csv("AndrenidaeOrange.csv")
+#bees = pd.read_csv("HalictidaeGreen.csv")
+bees = pd.read_csv("ColletidaeBlue.csv")
+
 print("first 5 rows of bees", bees.head(5))
 
 # Manually set the number of columns of data before the county data begins
@@ -115,8 +118,8 @@ def populate_occurrences(beesRow, counties_data):
     return counties_data 
    
 def plot_geodata(counties_data, plot_title, legend_handles=None):  # New plotting function
-    fig, ax = plt.subplots(figsize=(10, 10))  # Adjust the size as needed
-    counties_data.plot(ax=ax, facecolor=counties_data['color'], edgecolor=border_color, linewidth=2)
+    fig, ax = plt.subplots(figsize=(4, 4))  # Adjust the size as needed
+    counties_data.plot(ax=ax, facecolor=counties_data['color'], edgecolor=border_color, linewidth=1)
     
     # Limit the amount of whitespace
     fig.tight_layout()
