@@ -34,7 +34,8 @@ counties_data = gpd.read_file(gpkg_path)
 #bees = pd.read_csv("MapsData.csv")
 #bees = pd.read_csv("AndrenidaeOrange.csv")
 #bees = pd.read_csv("HalictidaeGreen.csv")
-bees = pd.read_csv("ColletidaeBlue.csv")
+#bees = pd.read_csv("ColletidaeBlue.csv")
+bees = pd.read_csv("ApidaeYellow_first10.csv")
 
 print("first 5 rows of bees", bees.head(5))
 
@@ -118,7 +119,7 @@ def populate_occurrences(beesRow, counties_data):
     return counties_data 
    
 def plot_geodata(counties_data, plot_title, legend_handles=None):  # New plotting function
-    fig, ax = plt.subplots(figsize=(4, 4))  # Adjust the size as needed
+    fig, ax = plt.subplots(figsize=(4, 4))  # units on figsize are inches
     counties_data.plot(ax=ax, facecolor=counties_data['color'], edgecolor=border_color, linewidth=1)
     
     # Limit the amount of whitespace
@@ -140,7 +141,8 @@ def plot_geodata(counties_data, plot_title, legend_handles=None):  # New plottin
     plot_title = plot_title.replace(".", "")
     
     # Save the figure with reduced whitespace and tighter bounding box
-    fig.savefig(os.path.join(dir_name, f"{plot_title}.png"), dpi=600, bbox_inches='tight', pad_inches=0.01)
+    # setting DPI to 144 which web says is equivalent to "Retina" display
+    fig.savefig(os.path.join(dir_name, f"{plot_title}.png"), dpi=144, bbox_inches='tight', pad_inches=0.01)
     plt.close(fig)
     #plt.close('all')  # Close all figures to free memory
 
