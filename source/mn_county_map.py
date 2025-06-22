@@ -32,14 +32,17 @@ counties_data = gpd.read_file(gpkg_path)
 
 # Read the BeeOccurrence CSV into Pandas DataFrame
 #bees = pd.read_csv("MapsData.csv")
+#bees = pd.read_csv("ApidaeYellow_first10.csv")
 #bees = pd.read_csv("AndrenidaeOrange.csv")
 #bees = pd.read_csv("HalictidaeGreen.csv")
 #bees = pd.read_csv("ColletidaeBlue.csv")
-bees = pd.read_csv("ApidaeYellow_first10.csv")
+#bees = pd.read_csv("MelittidaePurple.csv")
+bees = pd.read_csv("MegachilidaeRed.csv")
 
 print("first 5 rows of bees", bees.head(5))
 
 # Manually set the number of columns of data before the county data begins
+# (Color1, Color2, and Scientific Name)
 cols_before_county_data = 3
 
 # Perform some data integrity checks...
@@ -50,7 +53,6 @@ output_string += "    (total columns less " + str(cols_before_county_data) + " f
 output_string += "Number of rows in Bees data: " + str(len(bees)) + "\r\n"
 
 # Check that every county in the bees DataFrame can be found in the database of counties
-#check that every county in the bees dataframe can be found in the database of counties
 #iterate through columns of bees
 dataCheckOk = True
 for county_column in bees.columns[cols_before_county_data:]:
@@ -74,7 +76,6 @@ if dataCheckOk:
 #dataCheckOk = False
 
 print(output_string)
-
 
 # Iterate through columns of bees
 
@@ -145,12 +146,8 @@ def plot_geodata(counties_data, plot_title, legend_handles=None):  # New plottin
     fig.savefig(os.path.join(dir_name, f"{plot_title}.png"), dpi=144, bbox_inches='tight', pad_inches=0.01)
     plt.close(fig)
     #plt.close('all')  # Close all figures to free memory
-
-    
-
+ 
 counties_data['color'] = bee_absent_color  # initialize once outside loop
-
-
 
 for index, row in bees.iterrows():
     #counties_data_copy = counties_data.copy()
@@ -164,9 +161,8 @@ for index, row in bees.iterrows():
     #    mpatches.Patch(color='#' + row['Color2'], label='New record\nsince 2023'),
     #    mpatches.Patch(color=bee_absent_color, label='Absent')
     #]
-        
-    
-    print(f"Memory usage: {psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2:.2f} MB")
+       
+    print(f"Processed row {index + 1} of {len(bees)}: {row['Scientific Name']}")
     gc.collect()
     
 # End timing
@@ -175,7 +171,9 @@ end_time = time.time()
 # Calculate and print the total execution time
 total_time = end_time - start_time
 print(f"Total execution time: {total_time:.2f} seconds")
+print(f"Memory usage: {psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2:.2f} MB")
 output_string += f" Total execution time: {total_time:.2f} seconds \r\n"
+output_string += f" Memory usage: {psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2:.2f} MB \r\n"
 #output_string +="Bees database place name '" + str(county_name) + "' not found in bees data. \r\n"
     
 # Save the data integrity checks string to a text file
